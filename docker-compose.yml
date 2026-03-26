@@ -1,0 +1,28 @@
+version: '3.8' 
+
+services: 
+  proxy: 
+    image: nginx:alpine 
+    container_name: nginx-proxy 
+    ports:
+      - "80:80" 
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/nginx.conf:ro 
+    networks:
+      - app-network 
+    depends_on:
+      - api1-frontend 
+    restart: always 
+
+  api1-frontend:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    
