@@ -51,7 +51,7 @@ Health: http://localhost/health
 
 ### Load Balancing
   execute: curl http://localhost/api/
-  
+
   ou:
   acesse  http://localhost/ e presione "Testar API" para alterar entre os containers backend
 

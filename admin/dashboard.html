@@ -1,22 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>Admin</title>
+    <meta charset="UTF-8">
+    <title>Dashboard Nginx</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1e1e2f;
+            color: #fff;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #00d4ff;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 6px;
+            background: #00d4ff;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #00b3cc;
+        }
+
+        .card {
+            background: #2a2a3d;
+            padding: 20px;
+            margin: 15px auto;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ffcc;
+        }
+    </style>
 </head>
 <body>
-    <h1>Painel Admin</h1>
 
-    <p>Status do sistema:</p>
-    <button onclick="verStatus()">Ver Status</button>
+    <h1>📊 Nginx Dashboard</h1>
 
-    <pre id="status"></pre>
+    <button id="refreshBtn">🔄 Atualizar</button>
+
+    <div class="card">
+        <p>Active Connections</p>
+        <div id="active" class="value">-</div>
+    </div>
+
+    <div class="card">
+        <p>Reading</p>
+        <div id="reading" class="value">-</div>
+    </div>
+
+    <div class="card">
+        <p>Writing</p>
+        <div id="writing" class="value">-</div>
+    </div>
+
+    <div class="card">
+        <p>Waiting</p>
+        <div id="waiting" class="value">-</div>
+    </div>
 
     <script>
-        async function verStatus() {
-            const res = await fetch('/api/');
-            const data = await res.json();
-            document.getElementById('status').innerText = JSON.stringify(data);
+        async function loadStatus() {
+            try {
+                const res = await fetch('/nginx-status');
+                const text = await res.text();
+
+                const lines = text.split('\n');
+
+                // Active connections
+                const activeLine = lines.find(l => l.includes("Active connections"));
+                const active = activeLine ? activeLine.split(':')[1].trim() : '-';
+
+                // Reading / Writing / Waiting
+                let reading = '-';
+                let writing = '-';
+                let waiting = '-';
+
+                const rwLine = lines.find(l => l.includes("Reading"));
+
+                if (rwLine) {
+                    const match = rwLine.match(/Reading:\s*(\d+)\s*Writing:\s*(\d+)\s*Waiting:\s*(\d+)/);
+
+                    if (match) {
+                        reading = match[1];
+                        writing = match[2];
+                        waiting = match[3];
+                    }
+                }
+
+                document.getElementById('active').innerText = active;
+                document.getElementById('reading').innerText = reading;
+                document.getElementById('writing').innerText = writing;
+                document.getElementById('waiting').innerText = waiting;
+
+            } catch (err) {
+                console.error("Erro ao carregar status:", err);
+            }
         }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('refreshBtn').addEventListener('click', loadStatus);
+            loadStatus(); // carrega ao abrir
+            setInterval(loadStatus, 3000); // atualiza automático
+        });
     </script>
+
 </body>
 </html>

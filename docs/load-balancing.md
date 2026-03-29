@@ -10,4 +10,4 @@
 
     "limit_req" limita a quantidade de requisições.
 
-    Esse arquivo também faz o proxy para servir html estático e proxy reverso para acessar o backend
+    Esse arquivo também faz proxy reverso para acessar o backend
