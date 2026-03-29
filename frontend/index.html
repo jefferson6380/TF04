@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loja</title>
+</head>
+<body>
+    <h1>Loja Virtual</h1>
+
+    <button onclick="chamarAPI()">Testar API</button>
+
+    <pre id="resposta"></pre>
+
+    <script>
+        async function chamarAPI() {
+            try {
+                const res = await fetch('/api/');
+                const data = await res.json();
+                document.getElementById('resposta').innerText = JSON.stringify(data);
+            } catch (error) {
+                console.error('Erro ao chamar API:', error);
+                document.getElementById('resposta').innerText = 'Erro ao chamar API';
+            }
+
+        }
+    </script>
+</body>
+</html>

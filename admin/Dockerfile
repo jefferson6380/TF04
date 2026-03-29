@@ -3,7 +3,7 @@ FROM nginx:alpine
 # Remove configuração padrão (opcional)
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copia seus arquivos HTML
+COPY defalt.conf /etc/nginx/conf.d/default.conf
 COPY . /usr/share/nginx/html
 
 # Expõe a porta 80

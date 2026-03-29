@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Meu Site</title>
+    <title>Admin</title>
 </head>
 <body>
-  <h1>Funcionando 🚀</h1>
+    <h1>Painel Admin</h1>
+
+    <p>Status do sistema:</p>
+    <button onclick="verStatus()">Ver Status</button>
+
+    <pre id="status"></pre>
+
+    <script>
+        async function verStatus() {
+            const res = await fetch('/api/');
+            const data = await res.json();
+            document.getElementById('status').innerText = JSON.stringify(data);
+        }
+    </script>
 </body>
 </html>

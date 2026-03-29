@@ -27,44 +27,48 @@
 - Docker e Docker Compose
 
 ### Execução
-```bash
-git clone [https://github.com/jefferson6380/TF04---Nginx-Avan-ado.git]
-cd TF04---Nginx-Avan-ado
 
-# Gerar certificados SSL
-./scripts/generate-ssl.sh
+git clone [https://github.com/jefferson6380/TF04.git]
 
-# Subir todos os serviços
-docker-compose up -d --build
+cd TF04
 
-# Verificar status
-docker-compose ps
-Endpoints
+docker-compose up --build -d
 
+
+## Endpoints
 Frontend: http://localhost ou https://localhost
 API: http://localhost/api/
 Admin: http://localhost/admin/
 Status: http://localhost/nginx-status
 Health: http://localhost/health
-Testes de Load Balancing# Testar distribuição de carga
-for i in {1..10}; do
-  curl -s http://localhost/api/info | grep instance_id
-done
 
-# Simular falha de instância
-docker stop ecommerce-backend1
 
-# Verificar failover
-curl http://localhost/api/info
-Monitoramento
+# Testes
 
-Logs detalhados: docker-compose logs nginx
-Métricas: http://localhost/nginx-status
-Health checks automáticos a cada 30s
+### Load Balancing
+  execute: curl http://localhost/api/
+  
+  ou:
+  acesse  http://localhost/ e presione "Testar API" para alterar entre os containers backend
 
-### Validação
-```bash
-# Teste de load balancing
-docker-compose up -d --build
-for i in {1..6}; do curl -s http://localhost/api/info; done
-docker-compose down
+## Failover (simular queda)
+
+derrube algum container, examplo: docker stop backend3
+verifique os containers:
+execute curl http://localhost/api/ algumas vezes ou click em "Teste API" para verificar on containers
+
+## Simular limite de requisiçõse
+  click varias vezes em "Testar API"
+  
+  ou:
+  execute: for i in {1..10}; do curl -s http://localhost/api/; echo; done
+  irá retornar um html de erro 503 com muitas requisiçoes
+
+## verificar métricas
+  acesse:  http://localhost/nginx-status
+
+## verifique health
+ acesse: http://localhost/health
+
+
+

@@ -1,27 +1,89 @@
 version: '3.8' 
 
 services: 
+
+  # container nginx para proxy reverso e balanceamento de carga
   proxy: 
     image: nginx:alpine 
     container_name: nginx-proxy 
     ports:
       - "80:80" 
+      - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/nginx.conf:ro 
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
     networks:
       - app-network 
     depends_on:
-      - api1-frontend 
+      - frontend 
+      - admin
+      - api1-backend
+      - api2-backend
+      - api3-backend
     restart: always 
 
-  api1-frontend:
+  # container para servir html estático do frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+
+  # container para servir html estático do admin
+  admin:
     build:
       context: ./admin
       dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
     networks:
       - app-network
+    restart: always
+    
+  # container backend 1
+  api1-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile 
+    container_name: backend1
+    environment:
+      - INSTANCE_ID=backend1
+      - DELAY=0
+    expose:
+      - "3000"
+    networks:
+      - app-network
+    restart: always
+
+  # container backend 2
+  api2-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend2
+    environment:
+      - INSTANCE_ID=backend2
+      - DELAY=1
+    expose:
+      - "3000"
+    networks:
+      - app-network
+    restart: always
+
+  # container backend 3
+  api3-backend:
+    build:  
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend3
+    environment:
+      - INSTANCE_ID=backend3
+      - DELAY=2
+    expose:
+      - "3000"
+    networks:
+      - app-network
+    restart: always
 
 networks:
   app-network:
