@@ -34,6 +34,10 @@ cd TF04
 
 docker-compose up --build -d
 
+## verifique os servicos (opcional):
+  execute: docker compose config --services
+  ou
+  execute: docker compose ps
 
 ## Endpoints
 Frontend: http://localhost ou https://localhost
